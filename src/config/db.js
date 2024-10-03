@@ -1,16 +1,14 @@
-import { connect } from 'mongoose';
+import mongoose from 'mongoose';
 
-// Connect to the database. The database must be running
 const connectDB = async () => {
-  try {
-    await connect('mongodb://localhost:27017/mydb', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    });
-    console.log('MongoDB connected');
-  } catch (err) {
-    console.error('MongoDB connection error:', err);
-    process.exit(1);
+  if (process.env.NODE_ENV !== 'test') {
+    if (mongoose.connection.readyState === 0) {  // Only connect if not already connected
+      const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/mydb', {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      console.log(`MongoDB connected: ${conn.connection.host}`);
+    }
   }
 };
 

@@ -22,7 +22,7 @@ const UserSchema = new Schema({
   },
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  token: { type: String, unique: true, required: true },
+  token: { type: String, unique: true, required: false },
   groups: [{ type: Schema.Types.ObjectId, ref: 'Group' }],
   groupRequests: [{ type: Schema.Types.ObjectId, ref: 'Group' }]
 });

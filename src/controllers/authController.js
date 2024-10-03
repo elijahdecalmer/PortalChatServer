@@ -1,9 +1,11 @@
-import { User } from '../models/User.js';
+import { User, UserRole } from '../models/User.js';
 // Register user (with token generation)
 export async function register(req, res) {
-  const { name, username, password } = req.body;
+  const { name, username, password, role } = req.body;
   try {
-    const user = new User({ name, username, password });
+    let userRole = role;
+    if (!role) userRole = UserRole.CHAT_USER;
+    const user = new User({ name, username, password, role });
     await user.save();
     // return the whole user object, without the password
     let userMinusPassword = user.toObject();
@@ -18,7 +20,7 @@ export async function register(req, res) {
 export async function login(req, res) {
   const { username, password } = req.body;
   try {
-    const user = await findOne({ username });
+    const user = await User.findOne({ username });
     if (!user) return res.status(400).send('User not found');
 
     if (user.password !== password) {

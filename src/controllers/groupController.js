@@ -1,5 +1,6 @@
 import { UserRole } from "../models/User.js";
 import { Group } from "../models/Group.js";
+import { Channel } from "../models/Channel.js";
 
 export async function createGroup(req, res) {
     const { groupName, groupDescription } = req.body;
@@ -76,40 +77,55 @@ export async function createGroup(req, res) {
             return res.status(404).send('Group not found');
         }
 
-        if (!group.admins.includes(user._id)) {
+        if (!group.admins.includes(req.user._id)) {
             return res.status(401).send('Unauthorized to delete group, as they are not an admin of this group.');
         }
 
-        await group.delete();
+        await group.deleteOne();
 
         res.status(200).send('Group deleted');
         } catch (err) {
+          console.log("Error deleting group: ", err);
         res.status(400).send('Error deleting group: ' + err);
         }
     }
 
     export async function createChannel(req, res) {
-        const { groupId, channelName, channelDescription } = req.body;
+      const { groupId, channelName, channelDescription } = req.body;
     
-        try {
-            if (req.user.role !== UserRole.GROUP_ADMIN && req.user.role !== UserRole.SUPER_ADMIN) {
-                return res.status(401).send('Unauthorized to create channel, user is not an admin.');
-            }
-    
-            const group = await Group.findById(groupId);
-    
-            if (req.user.role === UserRole.GROUP_ADMIN && !group.admins.includes(req.user._id)) {
-                    return res.status(401).send('Unauthorized to create channel, user is not an admin of this group.');
-            }
-    
-            group.channels.push({ name: channelName, description: channelDescription });
-    
-            await group.save();
-    
-            res.status(201).send(group);
-        } catch (err) {
-            res.status(400).send('Error creating channel: ' + err);
+      try {
+        if (req.user.role !== UserRole.GROUP_ADMIN && req.user.role !== UserRole.SUPER_ADMIN) {
+          return res.status(401).send('Unauthorized to create channel, user is not an admin.');
         }
+    
+        const group = await Group.findById(groupId);
+    
+        if (req.user.role === UserRole.GROUP_ADMIN && !group.admins.includes(req.user._id)) {
+          return res.status(401).send('Unauthorized to create channel, user is not an admin of this group.');
+        }
+    
+        // Create a new Channel
+        const channel = new Channel({
+          name: channelName,
+          description: channelDescription,
+          group: groupId,
+        });
+    
+        await channel.save();
+    
+        // Push the channel's ObjectId into the group's channels array
+        group.channels.push(channel._id);
+    
+        await group.save();
+    
+        // Re-query the group and populate the channels
+        const updatedGroup = await Group.findById(groupId).populate('channels');
+    
+        res.status(201).send(updatedGroup);
+      } catch (err) {
+        console.log("Error creating channel: ", err);
+        res.status(400).send('Error creating channel: ' + err);
+      }
     }
 
     export async function deleteChannel(req, res) {
@@ -133,5 +149,56 @@ export async function createGroup(req, res) {
             res.status(200).send(`Channel ${channelId} deleted`);
         } catch (err) {
             res.status(400).send('Error deleting channel: ' + err);
+        }
+    }
+
+    // request access, called by any user to request access to a group
+    export async function requestAccess(req, res) {
+        const { groupId } = req.body;
+    
+        try {
+            const group = await Group.findById(groupId);
+
+            if (!group) {
+              res.status(404).send('Group not found');
+            }
+
+            group.memberRequests.push(req.user._id);
+
+            await group.save();
+
+            res.status(200).send('Request sent');
+        } catch (err) {
+            res.status(400).send('Error requesting access: ' + err);
+        }
+    }
+
+    // approve request, called by an admin to approve a user's request to join a group
+    export async function approveRequest(req, res) {
+        const { groupId, userId } = req.body;
+    
+        try {
+            if (req.user.role !== UserRole.GROUP_ADMIN && req.user.role !== UserRole.SUPER_ADMIN) {
+                return res.status(401).send('Unauthorized to approve request, user is not an admin.');
+            }
+            
+            const group = await Group.findById(groupId);
+
+            if (!group) {
+              res.status(404).send('Group not found');
+            }
+
+            if (!group.admins.includes(req.user._id)) {
+                return res.status(401).send('Unauthorized to approve request, user is not an admin of this group.');
+            }
+
+            group.memberRequests.pull(userId);
+            group.members.push(userId);
+
+            await group.save();
+
+            res.status(200).send('Request approved');
+        } catch (err) {
+            res.status(400).send('Error approving request: ' + err);
         }
     }
