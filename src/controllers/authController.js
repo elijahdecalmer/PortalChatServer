@@ -1,7 +1,6 @@
-const User = require('../models/User');
-
+import { User } from '../models/User.js';
 // Register user (with token generation)
-exports.register = async (req, res) => {
+export async function register(req, res) {
   const { name, username, password } = req.body;
   try {
     const user = new User({ name, username, password });
@@ -11,15 +10,15 @@ exports.register = async (req, res) => {
     delete userMinusPassword.password;
     res.status(201).send(userMinusPassword);
   } catch (err) {
-    res.status(400).send('Error registering user');
+    res.status(400).send('Error registering user: ' + err);
   }
-};
+}
 
 // Login user (returning user including token)
-exports.login = async (req, res) => {
+export async function login(req, res) {
   const { username, password } = req.body;
   try {
-    const user = await User.findOne({ username });
+    const user = await findOne({ username });
     if (!user) return res.status(400).send('User not found');
 
     if (user.password !== password) {
@@ -30,6 +29,6 @@ exports.login = async (req, res) => {
     delete userMinusPassword.password;
     res.status(201).send(userMinusPassword);
   } catch (err) {
-    res.status(400).send('Error logging in');
+    res.status(400).send('Error logging in: ' + err);
   }
-};
+}

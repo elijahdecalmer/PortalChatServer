@@ -1,4 +1,4 @@
-const User = require('../models/User');
+import { User } from '../models/User.js';
 
 // Middleware to authenticate using token
 // The token is used to verify that the user exists
@@ -20,8 +20,8 @@ const tokenAuth = async (req, res, next) => {
     req.user = user; // Attach user to request object
     next(); // Continue to the next middleware or route handler
   } catch (err) {
-    res.status(500).send('Could not authenticate user based on token (tokenAuthMiddleware)');
+    res.status(500).send('Could not authenticate user based on token (tokenAuthMiddleware): ' + err);
   }
 };
 
-module.exports = tokenAuth;
+export default tokenAuth;

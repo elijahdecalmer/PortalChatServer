@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
+import { connect } from 'mongoose';
 
 // Connect to the database. The database must be running
 const connectDB = async () => {
   try {
-    await mongoose.connect('mongodb://localhost:27017/mydb', {
+    await connect('mongodb://localhost:27017/mydb', {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
@@ -14,4 +14,4 @@ const connectDB = async () => {
   }
 };
 
-module.exports = connectDB;
+export default connectDB;
