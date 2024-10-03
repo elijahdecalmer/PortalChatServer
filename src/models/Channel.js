@@ -4,7 +4,7 @@ import { Schema, model } from 'mongoose';
 const ChannelSchema = new Schema({
     name: { type: String, required: true },
     description: { type: String, required: false },
-    group: { type: Schema.Types.ObjectId, ref: 'Group' },
+    group: { type: Schema.Types.ObjectId, ref: 'Group', required: true },
     messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
     bannedUsers: [{ type: Schema.Types.ObjectId, ref: 'User' }]
 });

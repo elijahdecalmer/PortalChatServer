@@ -63,3 +63,26 @@ export async function createChannel(req, res) {
           res.status(400).send('Error deleting channel: ' + err);
       }
   }
+
+  export async function getChannelAndMessages(req, res) {
+      const { channelId } = req.body;
+  
+      try {
+          const channel = await Channel.findById(channelId).populate('messages name description group bannedUsers');
+
+          if (!channel) {
+              return res.status(404).send('Channel not found');
+          }
+
+          if (channel.bannedUsers.includes(req.user._id)) {
+              return res.status(403).send('User is banned from this channel');
+          }
+
+          res.status(200).send(channel);
+      } catch (err) {
+          console.log("Error getting channel and messages: ", err);
+          res.status(400).send('Error getting channel and messages: ' + err);
+      }
+    }
+
+    
