@@ -10,7 +10,7 @@ describe('Database Connection Test', () => {
   it('should write a user to the database and read it back', async () => {
     // Create a new user
     const newUser = new User({
-      name: 'Test User',
+      email: 'testuser@gmail.com',
       username: 'testuser',
       password: 'password123',
     });
@@ -23,7 +23,7 @@ describe('Database Connection Test', () => {
 
     // Validate the read data
     expect(userFromDb).not.toBeNull();
-    expect(userFromDb.name).toEqual('Test User');
+    expect(userFromDb.email).toEqual('testuser@gmail.com');
     expect(userFromDb.username).toEqual('testuser');
   });
 });

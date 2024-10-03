@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { promoteToGroupAdmin, promoteToSuperAdmin } from '../controllers/adminController';
+import { promoteToGroupAdmin, promoteToSuperAdmin } from '../controllers/adminController.js';
 import tokenAuth from '../middlewares/tokenAuthMiddleware.js';  // Ensure user is authenticated
 const router = Router();
 

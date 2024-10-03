@@ -1,11 +1,11 @@
 import { User, UserRole } from '../models/User.js';
 // Register user (with token generation)
 export async function register(req, res) {
-  const { name, username, password, role } = req.body;
+  const { email, username, password, role } = req.body;
   try {
     let userRole = role;
     if (!role) userRole = UserRole.CHAT_USER;
-    const user = new User({ name, username, password, role });
+    const user = new User({ email, username, password, role });
     await user.save();
     // return the whole user object, without the password
     let userMinusPassword = user.toObject();

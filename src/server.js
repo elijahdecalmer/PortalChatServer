@@ -6,6 +6,7 @@ import userRoutes from './routes/userRoutes.js';
 import groupRoutes from './routes/groupRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import channelRoutes from './routes/channelRoutes.js';
 
 // Initialize express app
 const app = express();
@@ -22,6 +23,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/channels', channelRoutes);
 
 // Serve uploaded media
 const __filename = fileURLToPath(import.meta.url);

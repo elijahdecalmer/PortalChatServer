@@ -1,4 +1,4 @@
-import { User, UserRole } from '../models/User';
+import { User, UserRole } from '../models/User.js';
 
 // Promote a chat user to group admin so they can make groups
 export async function promoteToGroupAdmin(req, res) {

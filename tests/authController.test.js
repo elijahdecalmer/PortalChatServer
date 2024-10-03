@@ -13,7 +13,7 @@ describe('Auth Controller', () => {
 
   it('should register a user', async () => {
     const res = await request(app).post('/api/auth/register').send({
-      name: 'John Doe',
+      email: 'johndoe@gmail.com',
       username: 'johndoe',
       password: 'password123',
     });
@@ -28,7 +28,7 @@ describe('Auth Controller', () => {
 
   it('should login a user', async () => {
     const user = new User({
-      name: 'John Doe',
+      email: 'johndoe@gmail.com',
       username: 'johndoe657686',
       password: 'password123',
       token: 'random-token',

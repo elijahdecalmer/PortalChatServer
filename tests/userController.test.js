@@ -13,7 +13,7 @@ describe('User Controller', () => {
 
   it('should get user profile', async () => {
     const user = new User({
-      name: 'John Doe',
+      email: 'johndoe@gmail.com',
       username: 'johndoe',
       password: 'password123',
       token: 'user-token',

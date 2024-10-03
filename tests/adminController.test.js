@@ -15,7 +15,7 @@ describe('Admin Controller', () => {
     const superAdminResponse = await request(app)
       .post('/api/auth/register')
       .send({
-        name: 'Super Admin',
+        email: 'superadmin@gmail.com',
         username: 'superadmin',
         password: 'password123',
         role: UserRole.SUPER_ADMIN,
@@ -27,7 +27,7 @@ describe('Admin Controller', () => {
     const userResponse = await request(app)
       .post('/api/auth/register')
       .send({
-        name: 'John Doe',
+        email: "johndw@gmail.com",
         username: 'johndoe',
         password: 'password123',
       });
@@ -61,7 +61,7 @@ describe('Admin Controller', () => {
     const regularUserResponse = await request(app)
       .post('/api/auth/register')
       .send({
-        name: 'Regular User',
+        email: "regularuser@gmail.com",
         username: 'regularuser',
         password: 'password123',
       });
@@ -85,7 +85,7 @@ describe('Admin Controller', () => {
     const superAdminResponse = await request(app)
       .post('/api/auth/register')
       .send({
-        name: 'Super Admin',
+        email: 'superadmin@gmail.com',
         username: 'superadmin',
         password: 'password123',
         role: UserRole.SUPER_ADMIN,
@@ -97,7 +97,7 @@ describe('Admin Controller', () => {
     const userResponse = await request(app)
       .post('/api/auth/register')
       .send({
-        name: 'Jane Doe',
+        email: 'janedoe@gmail.com',
         username: 'janedoe',
         password: 'password123',
       });
@@ -132,7 +132,7 @@ describe('Admin Controller', () => {
     const regularUserResponse = await request(app)
       .post('/api/auth/register')
       .send({
-        name: 'Regular User',
+        email: 'regularuser@gmail.com',
         username: 'regularuser',
         password: 'password123',
       });

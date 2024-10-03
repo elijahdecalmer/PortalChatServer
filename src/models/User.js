@@ -11,7 +11,7 @@ Object.freeze(UserRole);
 
 // A user can have a profile picture, a bio and a role. I have chosen to do simplified token authentication to demonstrate session-like use without the complexity of sessions
 const UserSchema = new Schema({
-  name: { type: String, required: true },
+  email: { type: String, required: true },
   profilePictureRef: { type: String },
   bio: { type: String },
   role: {
