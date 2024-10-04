@@ -10,7 +10,7 @@ export async function register(req, res) {
     // return the whole user object, without the password
     let userMinusPassword = user.toObject();
     delete userMinusPassword.password;
-    res.status(201).send({ success: true, message: userMinusPassword});
+    res.status(201).send({ success: true, user: userMinusPassword});
   } catch (err) {
     res.status(400).send({ success: false, message: 'Error registering user: ' + err});
   }
@@ -29,7 +29,7 @@ export async function login(req, res) {
     // return the whole user object, without the password
     let userMinusPassword = user.toObject();
     delete userMinusPassword.password;
-    res.status(201).send({ success: true, message: userMinusPassword});
+    res.status(201).send({ success: true, user: userMinusPassword});
   } catch (err) {
     res.status(400).send({ success: false, message: 'Error logging in: ' + err});
   }

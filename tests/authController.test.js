@@ -1,6 +1,5 @@
 process.env.NODE_ENV = 'test';
 
-
 import { connect, closeDatabase, clearDatabase } from './setup.js';
 import request from 'supertest';
 import app from '../src/server.js';
@@ -19,11 +18,12 @@ describe('Auth Controller', () => {
     });
 
     expect(res.statusCode).toEqual(201);
-    expect(res.body.username).toEqual('johndoe');
-    expect(res.body.password).toBeUndefined();
+    expect(res.body.success).toBe(true);
+    expect(res.body.user.username).toEqual('johndoe');
+    expect(res.body.user.password).toBeUndefined(); // Ensure password is not returned
 
     const user = await User.findOne({ username: 'johndoe' });
-    expect(user).toBeTruthy();
+    expect(user).toBeTruthy(); // Ensure the user exists in the database
   });
 
   it('should login a user', async () => {
@@ -41,6 +41,8 @@ describe('Auth Controller', () => {
     });
 
     expect(res.statusCode).toEqual(201);
-    expect(res.body.token).toEqual('random-token');
+    expect(res.body.success).toBe(true);
+    expect(res.body.user.token).toEqual('random-token'); // Verify the token is returned
+    expect(res.body.user.password).toBeUndefined(); // Ensure password is not returned
   });
 });

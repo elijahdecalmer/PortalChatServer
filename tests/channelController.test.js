@@ -41,8 +41,9 @@ describe('Channel Controller', () => {
       });
 
     expect(res.statusCode).toEqual(201);
-    expect(res.body.channels.length).toEqual(1);
-    expect(res.body.channels[0].name).toEqual('Test Channel');
+    expect(res.body.success).toBe(true);
+    expect(res.body.group.channels.length).toEqual(1);
+    expect(res.body.group.channels[0].name).toEqual('Test Channel');
   });
 
   // Test for deleting a channel from a group
@@ -79,10 +80,10 @@ describe('Channel Controller', () => {
       });
 
     expect(res.statusCode).toEqual(200);
-    expect(res.text).toEqual(`Channel ${group.channels[0]._id} deleted`);
+    expect(res.body.success).toBe(true);
+    expect(res.body.message).toEqual(`Channel ${group.channels[0]._id} deleted successfully`);
 
     const updatedGroup = await Group.findById(group._id);
     expect(updatedGroup.channels.length).toEqual(0);
   });
-
 });

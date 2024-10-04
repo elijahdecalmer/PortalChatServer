@@ -31,7 +31,8 @@ describe('Group Controller', () => {
       });
 
     expect(res.statusCode).toEqual(201);
-    expect(res.body.name).toEqual('Test Group');
+    expect(res.body.success).toBe(true);
+    expect(res.body.group.name).toEqual('Test Group');
     const group = await Group.findOne({ name: 'Test Group' });
     expect(group).toBeTruthy();
     expect(group.admins).toContainEqual(groupAdmin._id);
@@ -57,7 +58,8 @@ describe('Group Controller', () => {
       });
 
     expect(res.statusCode).toEqual(401);
-    expect(res.text).toEqual('Unauthorized to create group');
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toEqual('Unauthorized to create group');
   });
 
   // Test for fetching all groups
@@ -91,9 +93,10 @@ describe('Group Controller', () => {
       .set('Authorization', 'superadmin-token');
 
     expect(res.statusCode).toEqual(200);
-    expect(res.body.length).toEqual(2);
-    expect(res.body[0].name).toEqual('Group 1');
-    expect(res.body[1].name).toEqual('Group 2');
+    expect(res.body.success).toBe(true);
+    expect(res.body.groups.length).toEqual(2);
+    expect(res.body.groups[0].name).toEqual('Group 1');
+    expect(res.body.groups[1].name).toEqual('Group 2');
   });
 
   // Test for fetching user-specific groups
@@ -120,8 +123,9 @@ describe('Group Controller', () => {
       .set('Authorization', 'groupadmin-token');
 
     expect(res.statusCode).toEqual(200);
-    expect(res.body.length).toEqual(1);
-    expect(res.body[0].name).toEqual('Admin Group');
+    expect(res.body.success).toBe(true);
+    expect(res.body.groups.length).toEqual(1);
+    expect(res.body.groups[0].name).toEqual('Admin Group');
   });
 
   // Test for deleting a group by an admin
@@ -149,12 +153,11 @@ describe('Group Controller', () => {
       .send({ groupId: group._id });
 
     expect(res.statusCode).toEqual(200);
-
-    expect(res.text).toEqual('Group deleted');
+    expect(res.body.success).toBe(true);
+    expect(res.body.message).toEqual('Group deleted successfully');
     const deletedGroup = await Group.findById(group._id);
     expect(deletedGroup).toBeNull();
   });
-
 
   // Test for requesting access to a group
   it('should allow a user to request access to a group', async () => {
@@ -190,7 +193,8 @@ describe('Group Controller', () => {
       });
 
     expect(res.statusCode).toEqual(200);
-    expect(res.text).toEqual('Request sent');
+    expect(res.body.success).toBe(true);
+    expect(res.body.message).toEqual('Access request sent successfully');
   });
 
   // Test for approving a request to join a group
@@ -229,6 +233,7 @@ describe('Group Controller', () => {
       });
 
     expect(res.statusCode).toEqual(200);
-    expect(res.text).toEqual('Request approved');
+    expect(res.body.success).toBe(true);
+    expect(res.body.message).toEqual('User approved and added to group');
   });
 });

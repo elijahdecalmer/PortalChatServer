@@ -21,7 +21,7 @@ describe('Admin Controller', () => {
         role: UserRole.SUPER_ADMIN,
       });
     
-    const superAdmin = superAdminResponse.body; // This contains the user object with the token
+    const superAdmin = superAdminResponse.body.user; // Contains the user object with the token
 
     // Now register a regular chat user
     const userResponse = await request(app)
@@ -32,17 +32,17 @@ describe('Admin Controller', () => {
         password: 'password123',
       });
     
-    const user = userResponse.body;
+    const user = userResponse.body.user;
 
     // Use the Super Admin's token in the Authorization header to promote the user
     const res = await request(app)
-      .post('/api/admin/promote/group-admin')
-      .set('Authorization', superAdmin.token)  // Use the token from the registered Super Admin
+      .post('/api/admin/promoteToGroupAdmin')
+      .set('Authorization', `Bearer ${superAdmin.token}`)  // Use Bearer format for the token
       .send({ usernameToPromote: 'johndoe' });
 
     // Assert the results
     expect(res.statusCode).toEqual(201);
-    expect(res.text).toEqual('User promoted to group admin');
+    expect(res.body.message).toEqual('User promoted to group admin');
 
     // Check that the user's role has been updated
     const updatedUserResponse = await request(app)
@@ -52,7 +52,7 @@ describe('Admin Controller', () => {
         password: 'password123'
       });
 
-    const updatedUser = updatedUserResponse.body;
+    const updatedUser = updatedUserResponse.body.user;
     expect(updatedUser.role).toEqual(UserRole.GROUP_ADMIN);
   });
 
@@ -66,17 +66,17 @@ describe('Admin Controller', () => {
         password: 'password123',
       });
 
-    const regularUser = regularUserResponse.body;
+    const regularUser = regularUserResponse.body.user;
 
     // Try to promote a user using the regular user's token
     const res = await request(app)
-      .post('/api/admin/promote/group-admin')
-      .set('Authorization', regularUser.token)  // Use the regular user's token
+      .post('/api/admin/promoteToGroupAdmin')
+      .set('Authorization', `Bearer ${regularUser.token}`)  // Use Bearer format for the token
       .send({ usernameToPromote: 'randomuser' });
 
     // Assert the results
     expect(res.statusCode).toEqual(401);
-    expect(res.text).toEqual('Unauthorized to promote user to group admin');
+    expect(res.body.message).toEqual('Unauthorized to promote user to group admin');
   });
 
   // New test to promote a user to Super Admin
@@ -91,7 +91,7 @@ describe('Admin Controller', () => {
         role: UserRole.SUPER_ADMIN,
       });
 
-    const superAdmin = superAdminResponse.body; // Contains the Super Admin's user object with token
+    const superAdmin = superAdminResponse.body.user; // Contains the Super Admin's user object with token
 
     // Register a regular user who will be promoted
     const userResponse = await request(app)
@@ -102,17 +102,17 @@ describe('Admin Controller', () => {
         password: 'password123',
       });
 
-    const user = userResponse.body;
+    const user = userResponse.body.user;
 
     // Use the Super Admin's token in the Authorization header to promote the user
     const res = await request(app)
-      .post('/api/admin/promote/super-admin')
-      .set('Authorization', superAdmin.token)  // Use the token from the registered Super Admin
+      .post('/api/admin/promoteToSuperAdmin')
+      .set('Authorization', `Bearer ${superAdmin.token}`)  // Use Bearer format for the token
       .send({ usernameToPromote: 'janedoe' });
 
     // Assert the results
     expect(res.statusCode).toEqual(201);
-    expect(res.text).toEqual('User promoted to super admin');
+    expect(res.body.message).toEqual('User promoted to super admin');
 
     // Check that the user's role has been updated
     const updatedUserResponse = await request(app)
@@ -122,7 +122,7 @@ describe('Admin Controller', () => {
         password: 'password123'
       });
 
-    const updatedUser = updatedUserResponse.body;
+    const updatedUser = updatedUserResponse.body.user;
     expect(updatedUser.role).toEqual(UserRole.SUPER_ADMIN);
   });
 
@@ -137,16 +137,16 @@ describe('Admin Controller', () => {
         password: 'password123',
       });
 
-    const regularUser = regularUserResponse.body;
+    const regularUser = regularUserResponse.body.user;
 
     // Try to promote a user using the regular user's token
     const res = await request(app)
-      .post('/api/admin/promote/super-admin')
-      .set('Authorization', regularUser.token)  // Use the regular user's token
+      .post('/api/admin/promoteToSuperAdmin')
+      .set('Authorization', `Bearer ${regularUser.token}`)  // Use Bearer format for the token
       .send({ usernameToPromote: 'randomuser' });
 
     // Assert the results
     expect(res.statusCode).toEqual(401);
-    expect(res.text).toEqual('Unauthorized to promote user to super admin');
+    expect(res.body.message).toEqual('Unauthorized to promote user to super admin');
   });
 });

@@ -34,6 +34,7 @@ export async function promoteToSuperAdmin(req, res) {
 
     res.status(201).send({ succes: true, message: 'User promoted to super admin'});
   } catch (err) {
+    console.log("Error promoting user to super admin: " + err);
     res.status(400).send({ success: false, message: 'Error promoting user to super admin: ' + err});
   }
 }

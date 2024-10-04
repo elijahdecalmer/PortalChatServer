@@ -1,6 +1,5 @@
 process.env.NODE_ENV = 'test';
 
-
 import { connect, closeDatabase, clearDatabase } from './setup.js';
 import request from 'supertest';
 import app from '../src/server.js';
@@ -22,9 +21,10 @@ describe('User Controller', () => {
 
     const res = await request(app)
       .post('/api/users/profile')
-      .set('Authorization', 'user-token');
+      .set('Authorization', `Bearer ${user.token}`);
 
     expect(res.statusCode).toEqual(200);
-    expect(res.body.username).toEqual('johndoe');
+    expect(res.body.success).toBe(true);
+    expect(res.body.user.username).toEqual('johndoe');
   });
 });
