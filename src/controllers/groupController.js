@@ -1,6 +1,7 @@
 import { UserRole } from "../models/User.js";
 import { Group } from "../models/Group.js";
 
+// api/groups/createGroup
 export async function createGroup(req, res) {
     const { groupName, groupDescription } = req.body;
 
@@ -19,6 +20,7 @@ export async function createGroup(req, res) {
     }
   }
 
+  // api/groups/myGroups
   export async function getMyGroups(req, res) {
     try {
       const groups = await Group.find({ members: req.user._id }).populate('admins name description members channels');
@@ -32,6 +34,9 @@ export async function createGroup(req, res) {
       res.status(400).send('Error fetching user groups: ', err);
     }
   }
+
+
+  // api/groups/all
 
   export async function getAllGroups(req, res) {
     try {
@@ -47,6 +52,7 @@ export async function createGroup(req, res) {
     }
   }
 
+  // api/groups/details
   export async function getGroupDetails(req, res) {
     const { groupId } = req.body;
   
@@ -63,6 +69,7 @@ export async function createGroup(req, res) {
     }
   }
 
+  // api/groups/deleteGroup
     export async function deleteGroup(req, res) {
         const { groupId } = req.body;
         if (req.user.role !== UserRole.GROUP_ADMIN && req.user.role !== UserRole.SUPER_ADMIN) {
@@ -90,6 +97,7 @@ export async function createGroup(req, res) {
     }
 
     // request access, called by any user to request access to a group
+    // api/groups/requestAccess
     export async function requestAccess(req, res) {
         const { groupId } = req.body;
     
@@ -111,6 +119,7 @@ export async function createGroup(req, res) {
     }
 
     // approve request, called by an admin to approve a user's request to join a group
+    // api/groups/acceptAccess
     export async function approveRequest(req, res) {
         const { groupId, userId } = req.body;
     

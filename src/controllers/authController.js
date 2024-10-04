@@ -10,9 +10,9 @@ export async function register(req, res) {
     // return the whole user object, without the password
     let userMinusPassword = user.toObject();
     delete userMinusPassword.password;
-    res.status(201).send(userMinusPassword);
+    res.status(201).send({ success: true, message: userMinusPassword});
   } catch (err) {
-    res.status(400).send('Error registering user: ' + err);
+    res.status(400).send({ success: false, message: 'Error registering user: ' + err});
   }
 }
 
@@ -21,16 +21,28 @@ export async function login(req, res) {
   const { username, password } = req.body;
   try {
     const user = await User.findOne({ username });
-    if (!user) return res.status(400).send('User not found');
+    if (!user) return res.status(400).send({ success: false, message: 'User not found'});
 
     if (user.password !== password) {
-      return res.status(400).send('Invalid password');
+      return res.status(400).send({ success: false, message: 'Invalid password'});
     }
     // return the whole user object, without the password
     let userMinusPassword = user.toObject();
     delete userMinusPassword.password;
-    res.status(201).send(userMinusPassword);
+    res.status(201).send({ success: true, message: userMinusPassword});
   } catch (err) {
-    res.status(400).send('Error logging in: ' + err);
+    res.status(400).send({ success: false, message: 'Error logging in: ' + err});
+  }
+}
+
+// Delete account
+export async function deleteAccount(req, res) {
+  try {
+    const user = await User.findOneAndDelete({ username: req.user.username });
+    if (!user) return res.status(400).send({ success: false, message: 'User not found'});
+    res.status(201).send({ success: true, message: 'User deleted' });
+  }
+  catch (err) {
+    res.status(400).send({ success: false, message: 'Error deleting user: ' + err });
   }
 }
