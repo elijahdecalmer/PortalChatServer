@@ -2,6 +2,8 @@ import { Channel } from '../models/Channel.js';
 import { UserRole } from '../models/User.js';
 import { Group } from '../models/Group.js';
 
+
+// api/channels/createChannel
 export async function createChannel(req, res) {
   const { groupId, channelName, channelDescription } = req.body;
 
@@ -40,6 +42,8 @@ export async function createChannel(req, res) {
   }
 }
 
+
+// api/channels/deleteChannel
 export async function deleteChannel(req, res) {
   const { groupId, channelId } = req.body;
 
@@ -65,6 +69,7 @@ export async function deleteChannel(req, res) {
   }
 }
 
+// api/channels/getChannelAndMessages
 export async function getChannelAndMessages(req, res) {
   const { channelId } = req.body;
 
@@ -83,5 +88,31 @@ export async function getChannelAndMessages(req, res) {
   } catch (err) {
     console.log("Error getting channel and messages: ", err);
     res.status(400).send({ success: false, message: 'Error getting channel and messages: ' + err });
+  }
+}
+
+// api/channels/banUser
+export async function banUser(req, res) {
+  const { channelId, userId } = req.body;
+
+  try {
+    const channel = await Channel.findById(channelId);
+
+    if (!channel) {
+      return res.status(404).send({ success: false, message: 'Channel not found' });
+    }
+
+    if (req.user.role !== UserRole.GROUP_ADMIN && req.user.role !== UserRole.SUPER_ADMIN) {
+      return res.status(401).send({ success: false, message: 'Unauthorized to ban user, user is not an admin.' });
+    }
+
+    channel.bannedUsers.push(userId);
+
+    await channel.save();
+
+    res.status(200).send({ success: true, message: `User ${userId} banned from channel ${channelId}` });
+  } catch (err) {
+    console.log("Error banning user: ", err);
+    res.status(400).send({ success: false, message: 'Error banning user: ' + err });
   }
 }

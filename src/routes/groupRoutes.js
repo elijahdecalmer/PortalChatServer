@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createGroup, getGroupDetails, getAllGroups, deleteGroup, getMyGroups, approveRequest, requestAccess } from '../controllers/groupController.js';
+import { createGroup, getGroupDetails, getAllGroups, deleteGroup, getMyGroups, approveRequest, requestAccess, removeUser, rejectAccess } from '../controllers/groupController.js';
 import tokenAuth from '../middlewares/tokenAuthMiddleware.js';  // User must be authenticated
 const router = Router();
 
@@ -23,5 +23,11 @@ router.post('/requestAccess', tokenAuth, requestAccess);
 
 // accept a user into a group
 router.post('/acceptAccess', tokenAuth, approveRequest);
+
+// remove a user from a group
+router.post('/removeUser', tokenAuth, removeUser);
+
+// reject access to a user's request to join
+router.post('/rejectAccess', tokenAuth, rejectAccess);
 
 export default router;

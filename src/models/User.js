@@ -24,7 +24,8 @@ const UserSchema = new Schema({
   password: { type: String, required: true },
   token: { type: String, unique: true, required: false },
   groups: [{ type: Schema.Types.ObjectId, ref: 'Group' }],
-  groupRequests: [{ type: Schema.Types.ObjectId, ref: 'Group' }]
+  groupRequests: [{ type: Schema.Types.ObjectId, ref: 'Group' }],
+  reports: [{ type: Schema.Types.ObjectId, ref: 'Report' }]
 });
 
 // Generate a random token when creating a new user

@@ -15,6 +15,8 @@ router.post('/avatar', tokenAuth, upload.single('avatar'), updateUserAvatar);
 router.post('/bio', tokenAuth, updateUserBio);
 
 // Delete user account
+// api/users/delete
 router.post('/delete', tokenAuth, deleteUser);
+
 
 export default router;
