@@ -10,12 +10,20 @@ export async function createGroup(req, res) {
       return res.status(401).send({ success: false, message: 'Unauthorized to create group' });
     }
 
+    // find all super admins and add them as admins of the group
+
     const group = new Group({
       name: groupName,
       description: groupDescription,
       admins: [req.user._id],
       members: [req.user._id],
     });
+
+    // find all super admins and add them as admins of the group
+    const superAdmins = await User.find({ role: UserRole.SUPER_ADMIN });
+    for (const superAdmin of superAdmins) {
+      group.admins.push(superAdmin._id);
+    }
 
     await group.save();
 

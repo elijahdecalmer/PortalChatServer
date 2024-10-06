@@ -1,5 +1,6 @@
 import { User, UserRole } from '../models/User.js';
 import { Report } from '../models/Report.js';
+import { Group } from '../models/Group.js';
 
 // Promote a chat user to group admin so they can make groups
 // api/admin/promoteToGroupAdmin
@@ -99,5 +100,47 @@ export async function reportUser(req, res) {
     res.status(201).send({ success: true, message: 'User reported successfully' });
   } catch (err) {
     res.status(400).send({ success: false, message: 'Error reporting user: ' + err });
+  }
+}
+
+// api/admin/myGroups
+// Get all groups that I am an admin of
+export async function getMyGroups(req, res) {
+  try {
+    // group.admins is an array, find all where groups.admins includes req.user._id
+    let groups;
+    
+    if (req.user.role === 'super_admin'){
+      groups = await Group.find().populate('name description channels members memberRequests admins')
+      .populate({
+        path: 'channels', // Populate the channels field first
+        populate: {
+          path: 'bannedUsers', // Sub-populate the bannedUsers field within channels
+          model: 'User', // Assuming bannedUsers references the User model
+          select: 'username email', // Optionally select the fields you want to return from the User model
+        },
+      });
+
+    } else if (req.user.role === 'group_admin') {
+      groups = await Group.find({ admins: req.user._id }).populate('name description channels members memberRequests admins')
+      .populate({
+        path: 'channels', // Populate the channels field first
+        populate: {
+          path: 'bannedUsers', // Sub-populate the bannedUsers field within channels
+          model: 'User', // Assuming bannedUsers references the User model
+          select: 'username email', // Optionally select the fields you want to return from the User model
+        },
+      });
+    } else {
+      groups = [];
+    }
+
+    if (!groups || groups.length === 0) {
+      return res.status(404).send({ success: false, message: 'No groups found' });
+    }
+
+    res.status(200).send({ success: true, groups });
+  } catch (err) {
+    res.status(400).send({ success: false, message: 'Error fetching groups: ' + err });
   }
 }

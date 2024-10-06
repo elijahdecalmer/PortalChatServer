@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { promoteToGroupAdmin, promoteToSuperAdmin, deleteAccount, getAllUsers, reportUser } from '../controllers/adminController.js';
+import { promoteToGroupAdmin, promoteToSuperAdmin, deleteAccount, getAllUsers, reportUser, getMyGroups } from '../controllers/adminController.js';
 import tokenAuth from '../middlewares/tokenAuthMiddleware.js';  // Ensure user is authenticated
 const router = Router();
 
@@ -18,6 +18,7 @@ router.post('/allUsers', tokenAuth, getAllUsers);
 // Report a user to super_admins (Super or Group admin can report)
 router.post('/reportUser', tokenAuth, reportUser);
 
-
+// Get all groups that I am an admin of
+router.post('/myGroups', tokenAuth, getMyGroups);
 
 export default router;
