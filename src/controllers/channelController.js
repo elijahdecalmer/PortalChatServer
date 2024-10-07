@@ -1,6 +1,7 @@
 import { Channel } from '../models/Channel.js';
 import { UserRole } from '../models/User.js';
 import { Group } from '../models/Group.js';
+import { Message, MessageType } from '../models/Message.js';
 
 
 // api/channels/createChannel
@@ -114,5 +115,55 @@ export async function banUser(req, res) {
   } catch (err) {
     console.log("Error banning user: ", err);
     res.status(400).send({ success: false, message: 'Error banning user: ' + err });
+  }
+}
+
+// Function for handling file uploads and emitting messages to sockets
+export async function uploadFile(req, res) {
+  const io = req.app.get('socketio');  // Access the socket instance
+
+  try {
+    const { messageType, text, channelId } = req.body;
+
+    // Create a new message with the file reference (if it's media)
+    let message = new Message({
+      sender: req.user._id,
+      messageType,
+      text: messageType === MessageType.TEXT ? text : null,
+      mediaRef: messageType !== MessageType.TEXT ? `/uploads/media/${req.file.filename}` : null,
+      channel: channelId,
+      timestamp: new Date()
+    });
+
+    await message.save();  // Save the message to the database
+
+    const populatedMessage = await message.populate('sender');
+
+    // Emit the new message to the channel via Socket.io
+    io.to(channelId).emit('newMessage', populatedMessage);
+
+    // After uploading, respond with the file path
+    res.status(201).json({ success: true, filePath: `/uploads/media/${req.file.filename}` });
+  } catch (err) {
+    console.error('Error uploading file and sending message:', err);
+    res.status(500).json({ success: false, message: 'Error uploading file: ' + err.message });
+  }
+};
+
+// api/channels/details
+export async function getChannelDetails(req, res) {
+  const { channelId } = req.body;
+
+  try {
+    const channel = await Channel.findById(channelId).populate('group');
+
+    if (!channel) {
+      return res.status(404).send({ success: false, message: 'Channel not found' });
+    }
+
+    res.status(200).send({ success: true, message: 'Channel details retrieved successfully', channel });
+  }
+  catch (err) {
+    res.status(400).send({ success: false, message: 'Error fetching channel details: ' + err });
   }
 }

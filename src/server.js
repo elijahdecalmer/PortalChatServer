@@ -11,11 +11,34 @@ import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { initializeSockets } from './sockets.js';  // Import socket logic
+import { ExpressPeerServer } from 'peer';
 
 // Initialize express app
 const app = express();
 const port = process.env.PORT || 4000;
 const httpServer = createServer(app);
+
+
+// Connect to MongoDB
+connectDB();
+
+// Middleware to parse JSON
+app.use(express.json());
+
+// Enable CORS to allow from localhost:4200
+app.use(cors({
+    origin: 'http://localhost:4200',
+    methods: ['GET', 'POST'],
+    credentials: true
+}));
+
+
+
+const peerServer = ExpressPeerServer(httpServer, {
+    debug: true,
+});
+
+app.use('/peerjs', peerServer);
 
 // Initialize Socket.io
 const io = new Server(httpServer, {
@@ -25,12 +48,8 @@ const io = new Server(httpServer, {
     }
 });
 
-// Connect to MongoDB
-connectDB();
+app.set('socketio', io);
 
-// Middleware to parse JSON
-app.use(express.json());
-app.use(cors());
 
 // Routes
 app.use('/api/users', userRoutes);
@@ -42,7 +61,7 @@ app.use('/api/channels', channelRoutes);
 // Serve uploaded media
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use('/media', express.static(path.join(__dirname, 'uploads/media')));
+app.use('/uploads/media', express.static(path.join(__dirname, 'uploads/media')));
 
 // Initialize Socket.io connection
 initializeSockets(io);

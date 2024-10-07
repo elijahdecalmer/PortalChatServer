@@ -176,7 +176,7 @@ export async function approveRequest(req, res) {
       return res.status(404).send({ success: false, message: 'Group not found' });
     }
 
-    if (!group.admins.includes(req.user._id)) {
+    if (req.user.role === UserRole.GROUP_ADMIN && !group.admins.includes(req.user._id)) {
       return res.status(401).send({ success: false, message: 'Unauthorized to approve request, not an admin of this group.' });
     }
 
