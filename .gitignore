@@ -1,1 +1,3 @@
 node_modules/
+src/uploads/media/*
+!src/uploads/media/.gitkeep
