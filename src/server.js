@@ -16,6 +16,7 @@ import { ExpressPeerServer } from 'peer';
 // Initialize express app
 const app = express();
 const port = process.env.PORT || 4000;
+const host = '0.0.0.0'; // Listen on all network interfaces
 const httpServer = createServer(app);
 
 
@@ -68,7 +69,7 @@ initializeSockets(io);
 
 // Start the server only if not in test environment
 if (process.env.NODE_ENV !== 'test') {
-    httpServer.listen(port, () => {
+    httpServer.listen(port, host, () => {
         console.log(`Server running at http://localhost:${port}`);
     });
 }
