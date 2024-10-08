@@ -69,7 +69,7 @@ The project structure is organized to ensure maintainability and scalability, wi
    To run the tests, use:
 
    ```bash
-   yarn test
+   npm test
    ```
 
 ## Technologies Used
