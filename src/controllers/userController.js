@@ -13,24 +13,24 @@ export async function getUserProfile(req, res) {
   }
 }
 
-export const updateUserAvatar = async (req, res) => {
+// Update the user's profile picture
+// POST /api/users/updateAvatar
+export async function updateUserAvatar(req, res) {
   try {
     const user = await User.findById(req.user._id);
+
     if (!user) {
       return res.status(404).send({ success: false, message: 'User not found' });
     }
 
-    user.profilePictureRef = req.file.path; // Store the avatar file path
+    user.profilePictureRef = `/uploads/media/${req.file.filename}`;
     await user.save();
 
-    res.status(200).send({
-      success: true,
-      message: 'Avatar updated successfully',
-      avatarPath: user.profilePictureRef,
-    });
+    // After uploading, respond with the file path
+    res.status(201).json({ success: true, filePath: `/uploads/media/${req.file.filename}` });
   } catch (err) {
-    res.status(500).send({ success: false, message: `Error updating avatar: ${err.message}` });
-    console.error('Error updating avatar:', err);
+    console.error('Error uploading file and sending message:', err);
+    res.status(500).json({ success: false, message: 'Error uploading file: ' + err.message });
   }
 };
 

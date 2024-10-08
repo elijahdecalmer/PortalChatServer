@@ -264,3 +264,39 @@ export async function rejectAccess(req, res) {
     res.status(400).send({ success: false, message: 'Error rejecting request: ' + err });
   }
 }
+
+// leave a group you are a member of
+// api/groups/leaveGroup
+export async function leaveGroup(req, res) {
+  const { groupId } = req.body;
+
+  try {
+    const group = await Group.findById(groupId);
+
+    if (!group) {
+      return res.status(404).send({ success: false, message: 'Group not found' });
+    }
+
+    if (!group.members.includes(req.user._id) && !memberRequests.includes(req.user._id)) {
+      return res.status(400).send({ success: false, message: 'Not a member of this group' });
+    }
+
+    group.members.pull(req.user._id);
+    group.memberRequests.pull(req.user._id);
+
+    await group.save();
+
+    // Remove group from user's groups
+    const user = await User.findById(req.user._id);
+
+    user.groups.pull(groupId);
+    user.groupRequests.pull(groupId);
+
+    await user.save();
+
+    res.status(200).send({ success: true, message: 'Left group successfully' });
+  }
+  catch (err) {
+    res.status(400).send({ success: false, message: 'Error leaving group: ' + err });
+  }
+}
